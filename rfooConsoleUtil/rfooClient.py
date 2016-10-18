@@ -142,7 +142,7 @@ def showStacks(matching=None):
         if matching is not None:
             if (matching != threadId
                     and (
-                        not isinstance(matching, basestring)
+                        not isinstance(matching, _six.string_types)
                         or matching not in idToName.get(threadId, 'Unknown'))
                     ):
                 # Skip this thread
