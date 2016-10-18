@@ -1,6 +1,9 @@
 rfooConsoleUtil
 ===============
 
+Note that this project now embeds `rfoo` as that project has not been updated
+in 6 years and Google Code is shutting down.
+
 Example usage:
 
 1. In application start-up:
@@ -12,7 +15,9 @@ Example usage:
     
     python -c "import rfooConsoleUtil; rfooConsoleUtil.connect(port[, host])"
 
-    >>> q = getFrame()
+    >>> showStacks()  # Prints out threads; can use either name or thread ID
+                      # number for subsequent getFrame()
+    >>> q = getFrame('Main')
     >>> q
     Frame 1
     ...Stack trace...

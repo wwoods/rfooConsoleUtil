@@ -19,7 +19,7 @@ def connect(port, host = '127.0.0.1'):
     """
     rfooClient = open(os.path.join(_dir, 'rfooClient.py')).read()
     console = rconsole.ProxyConsole(port)
-    
+
     # Taken from rconsole.py:interact()
     try:
         import readline
@@ -27,16 +27,19 @@ def connect(port, host = '127.0.0.1'):
         readline.parse_and_bind('tab: complete')
     except ImportError:
         pass
-    
-    console.conn = rfoo.InetConnection().connect(host = host, 
+
+    console.conn = rfoo.InetConnection().connect(host = host,
             port = console.port)
     console.runsource('import sys, imp')
     console.runsource('clientModule = imp.new_module("rfooClient")')
-    console.runsource("exec {0} in clientModule.__dict__".format(
-            repr(rfooClient)))
+    if sys.version_info.major <= 2:
+        exec_tmpl = "exec {0} in clientModule.__dict__"
+    else:
+        exec_tmpl = "exec({0}, clientModule.__dict__)"
+    console.runsource(exec_tmpl.format(repr(rfooClient)))
     console.runsource('globals().update(clientModule.__dict__)')
     return rconsole.code.InteractiveConsole.interact(console, banner = None)
-    
+
 
 def spawnServer(port = None):
     """Spawns an rconsole with our namespace.
@@ -59,7 +62,7 @@ class _RfooUtilConsoleHandler(rconsole.ConsoleHandler):
     def complete(self, phrase, state):
         """Re-defined to stop @rfoo.restrict_local declaration"""
         return self._completer.complete(phrase, state)
-    
+
     def runsource(self, source, filename="<input>"):
         """Again, re-defined to stop @rfoo.restrict_local declaration"""
         self._namespace['_rcon_result_'] = None
@@ -74,7 +77,7 @@ class _RfooUtilConsoleHandler(rconsole.ConsoleHandler):
             return True, ''
         output = self._interpreter.buffout
         self._interpreter.buffout = ''
-        
+
         if result is not None:
             result = pprint.pformat(result)
             output += result + '\n'
